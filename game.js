@@ -19,6 +19,7 @@ const state = {
   openingAnchor: null,
   selectedCell: null,
   legalTargets: [],
+  chainInProgress: false,
   captured: {
     [PLAYERS.BLACK]: 0,
     [PLAYERS.WHITE]: 0,
@@ -63,6 +64,7 @@ function startNewGame() {
   state.openingAnchor = null;
   state.selectedCell = null;
   state.legalTargets = [];
+  state.chainInProgress = false;
   state.captured[PLAYERS.BLACK] = 0;
   state.captured[PLAYERS.WHITE] = 0;
   state.history = [];
@@ -158,6 +160,27 @@ function onCellClick(event) {
     return;
   }
 
+  if (state.chainInProgress) {
+    if (
+      state.selectedCell &&
+      row === state.selectedCell.row &&
+      col === state.selectedCell.col
+    ) {
+      finishTurn();
+      return;
+    }
+
+    if (isLegalTarget(row, col)) {
+      executeMove(row, col);
+      return;
+    }
+
+    setFeedback(
+      "Continue the capture sequence or click the highlighted stone to end your turn."
+    );
+    return;
+  }
+
   if (state.selectedCell && isLegalTarget(row, col)) {
     executeMove(row, col);
     return;
@@ -199,10 +222,14 @@ function onCellClick(event) {
   }
 }
 
-function clearSelection() {
+function clearSelection(options = {}) {
+  const { reRender = true } = options;
   state.selectedCell = null;
   state.legalTargets = [];
-  renderBoard();
+  state.chainInProgress = false;
+  if (reRender) {
+    renderBoard();
+  }
 }
 
 function executeMove(targetRow, targetCol) {
@@ -224,14 +251,32 @@ function executeMove(targetRow, targetCol) {
 
   state.captured[state.currentPlayer] += 1;
 
-  clearSelection();
+  const nextMoves = getLegalMovesFrom(targetRow, targetCol, state.currentPlayer);
 
+  if (nextMoves.length > 0) {
+    state.selectedCell = { row: targetRow, col: targetCol };
+    state.legalTargets = nextMoves;
+    state.chainInProgress = true;
+    renderBoard();
+    updateHud();
+    setFeedback(
+      "Capture chain in progress: choose another jump or click the highlighted stone to end your turn."
+    );
+    return;
+  }
+
+  finishTurn();
+}
+
+function finishTurn() {
   const opponent = getOpponent(state.currentPlayer);
+
+  clearSelection({ reRender: false });
+  renderBoard();
 
   if (!hasAnyLegalMove(opponent)) {
     state.winner = state.currentPlayer;
     updateHud();
-    renderBoard();
     setFeedback(
       `${capitalize(state.currentPlayer)} wins! ${capitalize(opponent)} has no legal moves.`
     );
@@ -253,6 +298,7 @@ function pushHistory() {
     openingAnchor: state.openingAnchor ? { ...state.openingAnchor } : null,
     selectedCell: state.selectedCell ? { ...state.selectedCell } : null,
     legalTargets: state.legalTargets.map((target) => ({ ...target })),
+    chainInProgress: state.chainInProgress,
   };
 
   state.history.push(snapshot);
@@ -273,6 +319,7 @@ function undoLastMove() {
   state.openingAnchor = snapshot.openingAnchor ? { ...snapshot.openingAnchor } : null;
   state.selectedCell = snapshot.selectedCell ? { ...snapshot.selectedCell } : null;
   state.legalTargets = snapshot.legalTargets.map((target) => ({ ...target }));
+  state.chainInProgress = snapshot.chainInProgress;
 
   renderBoard();
   updateHud();
@@ -347,6 +394,8 @@ function updateHud() {
       "Opening: Black remove a center stone or black corner.";
   } else if (state.stage === STAGES.OPENING_WHITE) {
     dom.turnIndicator.textContent = "Opening: White remove an adjacent stone.";
+  } else if (state.chainInProgress) {
+    dom.turnIndicator.textContent = `Capture chain: ${capitalize(state.currentPlayer)} continues.`;
   } else {
     dom.turnIndicator.textContent = `Current turn: ${capitalize(state.currentPlayer)}`;
   }
@@ -389,8 +438,7 @@ function handleOpeningBlack(row, col) {
   state.stage = STAGES.OPENING_WHITE;
   state.currentPlayer = PLAYERS.WHITE;
   state.openingAnchor = { row, col };
-  state.selectedCell = null;
-  state.legalTargets = [];
+  clearSelection({ reRender: false });
 
   renderBoard();
   updateHud();
@@ -419,8 +467,7 @@ function handleOpeningWhite(row, col) {
   state.board[row][col] = null;
   state.stage = STAGES.ACTIVE;
   state.currentPlayer = PLAYERS.BLACK;
-  state.selectedCell = null;
-  state.legalTargets = [];
+  clearSelection({ reRender: false });
 
   renderBoard();
   updateHud();

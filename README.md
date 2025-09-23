@@ -11,12 +11,12 @@ A minimalist browser-based recreation of the Hawaiian game Konane implemented wi
 - Reset/New Game control and clear status messaging.
 
 ## Game Rules
-The MVP follows the traditional Konane opening ritual and capture rules with single-capture turns:
+The MVP follows the traditional Konane opening ritual and capture rules with optional multi-jump turns:
 1. **Setup** – A 6x6 grid is completely filled with alternating black and white stones; no gaps are present at the start.
 2. **Opening** – Black removes either one of the two black stones at the board's center or a black stone from any corner. White then removes a white stone orthogonally adjacent to that empty space. Both stones are set aside.
 3. **Turn Order** – After the opening removals, Black takes the first capture turn, followed by White, alternating thereafter. Captures are mandatory when available.
 4. **Legal Moves** – A move consists of jumping orthogonally (up, down, left, or right) over one immediately adjacent opponent stone into the empty space directly beyond it.
-5. **Captures** – The jumped opponent stone is removed from the board. Only one capture is performed per turn in this MVP release (multi-jump turns are earmarked for future updates).
+5. **Multi-Jumps** – A player may continue jumping with the same stone as long as each jump is legal and they land on an empty space. Stopping is optional; in the MVP you can click the active stone to end your capture chain early.
 6. **No Moves** – If the active player has no legal capture, that player loses and the opponent wins the game.
 7. **Undo & Reset** – Developers can call `window.konane.undo()` during local play for testing. `New Game` resets the board and scores.
 
