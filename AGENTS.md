@@ -4,14 +4,14 @@
 First-release implementation of a browser-based Konane board game using vanilla HTML, CSS, and JavaScript, designed for straightforward deployment via GitHub Pages.
 
 ## Roadmap
-- [ ] **Phase 1 – Project Setup**
-  - [ ] Finalize MVP scope and success criteria for the first playable Konane release.
-  - [ ] Scaffold project structure with `index.html`, `styles.css`, and `game.js`.
-  - [ ] Configure basic linting/formatting workflow and initialize README outline.
-- [ ] **Phase 2 – Game Model & Rules**
-  - [ ] Decide board dimensions and initial stone layout.
-  - [ ] Implement move validation and capture mechanics in JavaScript.
-  - [ ] Handle turn switching, undo/reset hooks, and win detection logic.
+- [x] **Phase 1 – Project Setup**
+  - [x] Finalize MVP scope and success criteria for the first playable Konane release.
+  - [x] Scaffold project structure with `index.html`, `styles.css`, and `game.js`.
+  - [x] Configure basic linting/formatting workflow and initialize README outline.
+- [x] **Phase 2 – Game Model & Rules**
+  - [x] Decide board dimensions and initial stone layout.
+  - [x] Implement move validation and capture mechanics in JavaScript.
+  - [x] Handle turn switching, undo/reset hooks, and win detection logic.
 - [ ] **Phase 3 – UI Skeleton & Styling**
   - [ ] Build core layout with board grid, status panel, and controls.
   - [ ] Apply accessible styling for stones, typography, and spacing.
