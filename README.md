@@ -20,7 +20,7 @@ A minimalist browser-based recreation of the Hawaiian game Konane implemented wi
 ```
 
 ## Development Workflow
-1. Open `index.html` in a modern browser to run the game locally.
+1. Open `index.html` in a modern browser to run the game locally (or run `npm start` to get the app at http://localhost:8080 by default)
 2. Use the provided npm formatting script before committing changes (see below).
 3. Track roadmap progress in `AGENTS.md` by checking off completed items.
 

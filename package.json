@@ -4,6 +4,7 @@
   "description": "A minimalist browser-based recreation of the Hawaiian game Konane implemented with vanilla HTML, CSS, and JavaScript, designed for deployment on GitHub Pages.",
   "main": "game.js",
   "scripts": {
+    "start": "npx http-server",
     "format": "npx prettier --write \"**/*.{html,css,js}\"",
     "format:check": "npx prettier --check \"**/*.{html,css,js}\""
   },
