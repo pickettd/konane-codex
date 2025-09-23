@@ -1,0 +1,11 @@
+# Node
+node_modules/
+.npm/
+npm-debug.log*
+package-lock.json
+
+# Logs
+*.log
+
+# macOS
+.DS_Store

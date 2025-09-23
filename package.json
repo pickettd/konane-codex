@@ -1,0 +1,17 @@
+{
+  "name": "codex1-html",
+  "version": "1.0.0",
+  "description": "A minimalist browser-based recreation of the Hawaiian game Konane implemented with vanilla HTML, CSS, and JavaScript, designed for deployment on GitHub Pages.",
+  "main": "game.js",
+  "scripts": {
+    "format": "npx prettier --write \"**/*.{html,css,js}\"",
+    "format:check": "npx prettier --check \"**/*.{html,css,js}\""
+  },
+  "keywords": [
+    "konane",
+    "game",
+    "vanilla-js"
+  ],
+  "author": "",
+  "license": "MIT"
+}
