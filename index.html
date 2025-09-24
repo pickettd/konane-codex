@@ -7,24 +7,55 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
+    <a class="skip-link" href="#board">Skip to Konane board</a>
     <header class="site-header">
       <h1>Konane</h1>
       <p class="tagline">Traditional Hawaiian strategy game, playable in your browser.</p>
     </header>
 
     <main class="game-shell" aria-live="polite">
-      <section class="status-panel">
+      <section class="status-panel" aria-labelledby="status-heading">
+        <h2 id="status-heading" class="panel-heading">Game Status</h2>
         <p id="turn-indicator" class="status-line">Preparing game…</p>
         <p id="move-feedback" class="status-line" aria-live="polite"></p>
-        <div class="captured">
-          <span id="black-score" class="score">Black: 0</span>
-          <span id="white-score" class="score">White: 0</span>
-        </div>
+        <dl class="scoreboard" aria-label="Captured stones">
+          <div class="scoreboard-row">
+            <dt>Black captures</dt>
+            <dd id="black-score">0</dd>
+          </div>
+          <div class="scoreboard-row">
+            <dt>White captures</dt>
+            <dd id="white-score">0</dd>
+          </div>
+        </dl>
         <button id="reset-button" type="button" class="control-button">New Game</button>
+        <section class="instructions" aria-labelledby="instructions-heading">
+          <h3 id="instructions-heading">How to Play</h3>
+          <ol class="instruction-list">
+            <li>
+              Black removes a center or corner stone, then White removes an adjacent
+              stone.
+            </li>
+            <li>Select one of your stones with a legal capture to begin a turn.</li>
+            <li>Jump over opponent stones into empty spaces to capture.</li>
+            <li>
+              Continue jumping in a straight or turning path while captures remain, or
+              click your stone to end the chain.
+            </li>
+            <li>If you have no legal move, you lose.</li>
+          </ol>
+        </section>
       </section>
 
-      <section class="board-wrapper">
-        <div id="board" class="board" role="grid" aria-label="Konane board"></div>
+      <section class="board-wrapper" aria-labelledby="board-heading">
+        <h2 id="board-heading" class="panel-heading">Konane Board</h2>
+        <div
+          id="board"
+          class="board"
+          role="grid"
+          aria-label="Konane board"
+          aria-describedby="instructions-heading"
+        ></div>
       </section>
     </main>
 

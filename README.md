@@ -36,6 +36,12 @@ The MVP follows the traditional Konane opening ritual and capture rules with opt
 3. Track roadmap progress in `AGENTS.md` by checking off completed items.
 4. Access debug helpers (e.g., `window.konane.undo()`) from the browser console during development.
 
+## Accessibility & UX Notes
+- Skip link lets keyboard users jump straight to the board.
+- Status messages and capture counts announce through polite live regions.
+- Instruction pane beside the board summarizes the turn flow.
+- Animations and transitions respect `prefers-reduced-motion` settings.
+
 ## Formatting
 This project uses Prettier for formatting via `npx`:
 ```sh

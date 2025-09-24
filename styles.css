@@ -34,6 +34,28 @@ body {
   color: var(--color-text);
 }
 
+.skip-link {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-md);
+  background: var(--color-highlight);
+  color: #fff;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  font-weight: 600;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 120ms ease;
+  z-index: 10;
+}
+
+.skip-link:focus {
+  opacity: 1;
+  pointer-events: auto;
+}
+
 .site-header,
 .site-footer {
   padding: var(--spacing-md);
@@ -62,6 +84,7 @@ body {
   display: grid;
   gap: var(--spacing-md);
   align-items: start;
+  padding: 0 var(--spacing-xs) var(--spacing-md);
 }
 
 @media (min-width: 768px) {
@@ -79,14 +102,16 @@ body {
   gap: var(--spacing-sm);
 }
 
-.status-line {
-  margin: 0;
+.panel-heading {
+  margin: 0 0 var(--spacing-sm);
+  font-size: 1.1rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-muted);
 }
 
-.captured {
-  display: flex;
-  gap: var(--spacing-sm);
-  font-weight: 600;
+.status-line {
+  margin: 0;
 }
 
 .control-button {
@@ -114,11 +139,61 @@ body {
   box-shadow: none;
 }
 
+.scoreboard {
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--spacing-xs);
+}
+
+.scoreboard-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  background: rgba(39, 121, 189, 0.08);
+}
+
+.scoreboard-row dt {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--color-muted);
+}
+
+.scoreboard-row dd {
+  margin: 0;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.instructions {
+  margin-top: var(--spacing-sm);
+  padding-top: var(--spacing-sm);
+  border-top: 1px solid var(--color-border);
+}
+
+.instructions h3 {
+  margin: 0 0 var(--spacing-xs);
+  font-size: 1rem;
+}
+
+.instruction-list {
+  margin: 0;
+  padding-left: 1.25rem;
+  display: grid;
+  gap: var(--spacing-xs);
+  font-size: 0.95rem;
+  color: var(--color-muted);
+}
+
 .board-wrapper {
   background: var(--color-panel);
   padding: var(--spacing-md);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-soft);
+  display: grid;
+  gap: var(--spacing-sm);
 }
 
 .board {
@@ -205,5 +280,20 @@ body {
 @media (max-width: 480px) {
   .board {
     width: 90vw;
+  }
+}
+
+@media (max-width: 767px) {
+  .board-wrapper {
+    order: -1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
   }
 }

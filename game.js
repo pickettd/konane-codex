@@ -400,8 +400,8 @@ function updateHud() {
     dom.turnIndicator.textContent = `Current turn: ${capitalize(state.currentPlayer)}`;
   }
 
-  dom.blackScore.textContent = `Black: ${state.captured[PLAYERS.BLACK]}`;
-  dom.whiteScore.textContent = `White: ${state.captured[PLAYERS.WHITE]}`;
+  dom.blackScore.textContent = String(state.captured[PLAYERS.BLACK]);
+  dom.whiteScore.textContent = String(state.captured[PLAYERS.WHITE]);
 }
 
 function setFeedback(message) {
