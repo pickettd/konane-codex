@@ -5,7 +5,7 @@
   --color-border: #c8cfdb;
   --color-text: #1f2933;
   --color-muted: #52606d;
-  --color-black-stone: #1b1e23;
+  --color-black-stone: #2f3d58;
   --color-white-stone: #f1f5f9;
   --color-highlight: #2779bd;
   --spacing-xs: 0.375rem;
@@ -265,7 +265,7 @@ body {
 }
 
 .board-cell button[data-target="true"] {
-  box-shadow: 0 0 0 4px rgba(39, 121, 189, 0.32);
+  box-shadow: 0 0 0 4px rgba(217, 255, 0, 0.32);
 }
 
 .empty-slot::after {
