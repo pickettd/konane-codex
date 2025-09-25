@@ -264,6 +264,26 @@ body {
   outline-offset: 4px;
 }
 
+.board-cell button[data-chain="origin"],
+.board-cell button[data-chain="path"],
+.board-cell button[data-chain="destination"] {
+  box-shadow: 0 0 0 4px rgba(39, 121, 189, 0.35);
+}
+
+.board-cell button[data-chain="destination"] {
+  box-shadow: 0 0 0 4px rgba(39, 121, 189, 0.55);
+}
+
+.board-cell button[data-last-move="origin"],
+.board-cell button[data-last-move="path"],
+.board-cell button[data-last-move="destination"] {
+  box-shadow: 0 0 0 4px rgba(39, 121, 189, 0.25);
+}
+
+.board-cell button[data-last-move="destination"] {
+  box-shadow: 0 0 0 4px rgba(39, 121, 189, 0.5);
+}
+
 .board-cell button[data-target="true"] {
   box-shadow: 0 0 0 4px rgba(217, 255, 0, 0.32);
 }

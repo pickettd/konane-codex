@@ -20,6 +20,8 @@ const state = {
   selectedCell: null,
   legalTargets: [],
   chainInProgress: false,
+  chainSegments: [],
+  lastMoveSegments: [],
   captured: {
     [PLAYERS.BLACK]: 0,
     [PLAYERS.WHITE]: 0,
@@ -48,6 +50,7 @@ function cacheDom() {
 
 function bindEvents() {
   dom.resetButton.addEventListener("click", () => startNewGame());
+  document.addEventListener("keydown", onGlobalKeydown);
 }
 
 function exposeDebugApi() {
@@ -65,6 +68,8 @@ function startNewGame() {
   state.selectedCell = null;
   state.legalTargets = [];
   state.chainInProgress = false;
+  state.chainSegments = [];
+  state.lastMoveSegments = [];
   state.captured[PLAYERS.BLACK] = 0;
   state.captured[PLAYERS.WHITE] = 0;
   state.history = [];
@@ -88,6 +93,32 @@ function renderBoard() {
   dom.board.style.gridTemplateColumns = `repeat(${BOARD_SIZE}, 1fr)`;
   dom.board.style.gridTemplateRows = `repeat(${BOARD_SIZE}, 1fr)`;
 
+  const chainOrigins = new Set();
+  const chainPath = new Set();
+  let chainDestinationKey = null;
+  state.chainSegments.forEach((segment, index) => {
+    const originKey = makeCellKey(segment.from.row, segment.from.col);
+    chainOrigins.add(originKey);
+    const destKey = makeCellKey(segment.to.row, segment.to.col);
+    chainPath.add(destKey);
+    if (index === state.chainSegments.length - 1) {
+      chainDestinationKey = destKey;
+    }
+  });
+
+  const lastMoveOrigins = new Set();
+  const lastMovePath = new Set();
+  let lastMoveDestinationKey = null;
+  state.lastMoveSegments.forEach((segment, index) => {
+    const originKey = makeCellKey(segment.from.row, segment.from.col);
+    lastMoveOrigins.add(originKey);
+    const destKey = makeCellKey(segment.to.row, segment.to.col);
+    lastMovePath.add(destKey);
+    if (index === state.lastMoveSegments.length - 1) {
+      lastMoveDestinationKey = destKey;
+    }
+  });
+
   for (let row = 0; row < BOARD_SIZE; row += 1) {
     for (let col = 0; col < BOARD_SIZE; col += 1) {
       const wrapper = document.createElement("div");
@@ -109,12 +140,15 @@ function renderBoard() {
         wrapper.classList.add("empty-slot");
       }
 
-      if (
+      const isSelected =
         state.selectedCell &&
         row === state.selectedCell.row &&
-        col === state.selectedCell.col
-      ) {
+        col === state.selectedCell.col;
+      if (isSelected) {
         button.dataset.selected = "true";
+        button.setAttribute("aria-selected", "true");
+      } else {
+        button.setAttribute("aria-selected", "false");
       }
 
       if (state.legalTargets.some((target) => target.row === row && target.col === col)) {
@@ -129,7 +163,32 @@ function renderBoard() {
         button.dataset.target = "true";
       }
 
+      const cellKey = makeCellKey(row, col);
+
+      let chainMarker = null;
+      if (chainPath.has(cellKey)) {
+        chainMarker = chainDestinationKey === cellKey ? "destination" : "path";
+      }
+      if (chainOrigins.has(cellKey) && !chainMarker) {
+        chainMarker = "origin";
+      }
+      if (chainMarker) {
+        button.dataset.chain = chainMarker;
+      }
+
+      let lastMoveMarker = null;
+      if (lastMovePath.has(cellKey)) {
+        lastMoveMarker = lastMoveDestinationKey === cellKey ? "destination" : "path";
+      }
+      if (lastMoveOrigins.has(cellKey) && !lastMoveMarker) {
+        lastMoveMarker = "origin";
+      }
+      if (lastMoveMarker) {
+        button.dataset.lastMove = lastMoveMarker;
+      }
+
       button.addEventListener("click", onCellClick);
+      button.addEventListener("keydown", onCellKeydown);
 
       wrapper.appendChild(button);
       dom.board.appendChild(wrapper);
@@ -223,10 +282,13 @@ function onCellClick(event) {
 }
 
 function clearSelection(options = {}) {
-  const { reRender = true } = options;
+  const { reRender = true, preserveChain = false } = options;
   state.selectedCell = null;
   state.legalTargets = [];
   state.chainInProgress = false;
+  if (!preserveChain) {
+    state.chainSegments = [];
+  }
   if (reRender) {
     renderBoard();
   }
@@ -244,6 +306,15 @@ function executeMove(targetRow, targetCol) {
 
   const from = state.selectedCell;
   const captured = target.captured;
+
+  if (state.chainSegments.length === 0) {
+    state.lastMoveSegments = [];
+  }
+
+  state.chainSegments.push({
+    from: { row: from.row, col: from.col },
+    to: { row: targetRow, col: targetCol },
+  });
 
   state.board[from.row][from.col] = null;
   state.board[captured.row][captured.col] = null;
@@ -271,7 +342,9 @@ function executeMove(targetRow, targetCol) {
 function finishTurn() {
   const opponent = getOpponent(state.currentPlayer);
 
-  clearSelection({ reRender: false });
+  state.lastMoveSegments = state.chainSegments.slice();
+  clearSelection({ reRender: false, preserveChain: true });
+  state.chainSegments = [];
   renderBoard();
 
   if (!hasAnyLegalMove(opponent)) {
@@ -299,6 +372,14 @@ function pushHistory() {
     selectedCell: state.selectedCell ? { ...state.selectedCell } : null,
     legalTargets: state.legalTargets.map((target) => ({ ...target })),
     chainInProgress: state.chainInProgress,
+    chainSegments: state.chainSegments.map((segment) => ({
+      from: { ...segment.from },
+      to: { ...segment.to },
+    })),
+    lastMoveSegments: state.lastMoveSegments.map((segment) => ({
+      from: { ...segment.from },
+      to: { ...segment.to },
+    })),
   };
 
   state.history.push(snapshot);
@@ -320,6 +401,14 @@ function undoLastMove() {
   state.selectedCell = snapshot.selectedCell ? { ...snapshot.selectedCell } : null;
   state.legalTargets = snapshot.legalTargets.map((target) => ({ ...target }));
   state.chainInProgress = snapshot.chainInProgress;
+  state.chainSegments = snapshot.chainSegments.map((segment) => ({
+    from: { ...segment.from },
+    to: { ...segment.to },
+  }));
+  state.lastMoveSegments = snapshot.lastMoveSegments.map((segment) => ({
+    from: { ...segment.from },
+    to: { ...segment.to },
+  }));
 
   renderBoard();
   updateHud();
@@ -515,3 +604,98 @@ function isValidOpeningWhite(row, col) {
     Math.abs(row - state.openingAnchor.row) + Math.abs(col - state.openingAnchor.col);
   return distance === 1;
 }
+
+function onCellKeydown(event) {
+  const key = event.key;
+  const row = Number(event.currentTarget.dataset.row);
+  const col = Number(event.currentTarget.dataset.col);
+
+  if (KEY_TO_OFFSET[key]) {
+    event.preventDefault();
+    const nextRow = row + KEY_TO_OFFSET[key].row;
+    const nextCol = col + KEY_TO_OFFSET[key].col;
+    focusCell(nextRow, nextCol);
+    return;
+  }
+
+  if (key === "Home") {
+    event.preventDefault();
+    focusCell(row, 0);
+    return;
+  }
+
+  if (key === "End") {
+    event.preventDefault();
+    focusCell(row, BOARD_SIZE - 1);
+    return;
+  }
+
+  if (key === "PageUp") {
+    event.preventDefault();
+    focusCell(0, col);
+    return;
+  }
+
+  if (key === "PageDown") {
+    event.preventDefault();
+    focusCell(BOARD_SIZE - 1, col);
+    return;
+  }
+
+  if (key === "Escape" && state.stage === STAGES.ACTIVE) {
+    event.preventDefault();
+    if (state.chainInProgress) {
+      setFeedback(
+        "Finish the capture chain by selecting a target or reselect the highlighted stone to end the turn."
+      );
+    } else if (state.selectedCell) {
+      clearSelection();
+      setFeedback("Selection cleared. Choose a stone to move.");
+    }
+  }
+}
+
+function onGlobalKeydown(event) {
+  if (event.key !== "Escape") {
+    return;
+  }
+
+  if (state.stage !== STAGES.ACTIVE) {
+    return;
+  }
+
+  if (state.chainInProgress) {
+    setFeedback(
+      "Finish the capture chain by selecting a target or reselect the highlighted stone to end the turn."
+    );
+    return;
+  }
+
+  if (state.selectedCell) {
+    event.preventDefault();
+    clearSelection();
+    setFeedback("Selection cleared. Choose a stone to move.");
+  }
+}
+
+function focusCell(row, col) {
+  if (!isOnBoard(row, col)) {
+    return;
+  }
+
+  const targetButton = dom.board.querySelector(
+    `button[data-row="${row}"][data-col="${col}"]`
+  );
+  targetButton?.focus({ preventScroll: true });
+}
+
+function makeCellKey(row, col) {
+  return `${row}-${col}`;
+}
+
+const KEY_TO_OFFSET = Object.freeze({
+  ArrowUp: { row: -1, col: 0 },
+  ArrowDown: { row: 1, col: 0 },
+  ArrowLeft: { row: 0, col: -1 },
+  ArrowRight: { row: 0, col: 1 },
+});

@@ -16,10 +16,10 @@ First-release implementation of a browser-based Konane board game using vanilla 
   - [x] Build core layout with board grid, status panel, and controls.
   - [x] Apply accessible styling for stones, typography, and spacing.
   - [x] Ensure responsive behaviour for desktop and mobile viewports.
-- [ ] **Phase 4 – Interaction Layer**
-  - [ ] Connect click/touch handlers for piece selection and moves.
-  - [ ] Provide visual feedback for legal moves and turn state.
-  - [ ] Implement reset/new game controls and captured stone tracking.
+- [x] **Phase 4 – Interaction Layer**
+  - [x] Connect click/touch handlers for piece selection and moves.
+  - [x] Provide visual feedback for legal moves and turn state.
+  - [x] Implement reset/new game controls and captured stone tracking.
 - [ ] **Phase 5 – Polish & Testing**
   - [ ] Add light animations or hover cues to improve feedback.
   - [ ] Document manual test scenarios covering edge cases and resets.

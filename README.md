@@ -41,6 +41,7 @@ The MVP follows the traditional Konane opening ritual and capture rules with opt
 - Status messages and capture counts announce through polite live regions.
 - Instruction pane beside the board summarizes the turn flow.
 - Animations and transitions respect `prefers-reduced-motion` settings.
+- Arrow keys move focus across the grid; use Space/Enter to play and Escape to clear a selection.
 
 ## Formatting
 This project uses Prettier for formatting via `npx`:
